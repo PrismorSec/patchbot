@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from patchbot.agents import api, managed
+from patchbot.agents import api, managed, openai
 
 
 def test_managed_requires_ids(tmp_path, monkeypatch):
@@ -27,3 +27,11 @@ def test_api_agent_importable():
     # live ANTHROPIC_API_KEY: the actual tool loop needs real credentials
     # and is exercised manually (see README verification notes).
     assert callable(api.run)
+
+
+def test_openai_write_file_refuses_paths_outside_the_repo(tmp_path):
+    handlers = openai._handlers(str(tmp_path))
+    assert handlers["write_file"]({"path": "a/b.txt", "content": "ok"}) == "ok"
+    assert (tmp_path / "a/b.txt").read_text() == "ok"
+    assert "escapes" in handlers["write_file"]({"path": "../escape.txt", "content": "no"})
+    assert not (tmp_path.parent / "escape.txt").exists()

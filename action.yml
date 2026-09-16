@@ -24,10 +24,10 @@ inputs:
     description: Open auto-fix PRs for found vulnerabilities
     default: "false"
   agent:
-    description: Coding agent to use for fixes (claude|codex|api|managed)
+    description: Coding agent to use for fixes (claude|codex|api|openai|managed)
     default: "claude"
   model:
-    description: Model ID to pass to the agent (claude|codex|api|managed)
+    description: Model ID to pass to the agent (claude|codex|api|openai|managed)
     required: false
   max-prs:
     description: Max number of fix PRs to open per run
@@ -55,6 +55,8 @@ runs:
       run: |
         if [ "${{ inputs.agent }}" = "api" ] || [ "${{ inputs.agent }}" = "managed" ]; then
           pip install "${{ github.action_path }}[yaml,api]"
+        elif [ "${{ inputs.agent }}" = "openai" ]; then
+          pip install "${{ github.action_path }}[yaml,openai]"
         else
           pip install "${{ github.action_path }}[yaml]"
         fi

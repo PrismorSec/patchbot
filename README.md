@@ -37,6 +37,7 @@ Run it as a CLI, as a GitHub Action, or as a scheduled [Claude Managed Agents](h
 ```bash
 pip install patchbot            # scan + bump-only fixes
 pip install "patchbot[api]"     # + Anthropic-backed agent tiers (api, managed)
+pip install "patchbot[openai]"  # + OpenAI Agents API tier (openai)
 ```
 
 Requires Python 3.11 or newer. No other runtime dependencies.
@@ -139,7 +140,7 @@ fail_on = "high"                # critical | high | medium | low | none
 ignore  = ["GHSA-xxxx-xxxx-xxxx"]
 
 [fix]
-agent    = "claude"             # claude | codex | api | command | managed | none
+agent    = "claude"             # claude | codex | api | openai | command | managed | none
 model    = "claude-opus-5"      # optional; forwarded to the agent
 max_prs  = 5
 test_cmd = "npm test"
@@ -157,6 +158,7 @@ vault_id       = "vlt_..."
 |---|---|---|---|
 | `claude` / `codex` | Your machine or runner, through the CLI on `PATH` | The CLI, logged in | Local development |
 | `api` | Your runner, in process | `pip install patchbot[api]`, `ANTHROPIC_API_KEY` | CI without Node |
+| `openai` | Your runner, in process | `pip install patchbot[openai]`, `OPENAI_API_KEY` | CI without Node, on OpenAI models |
 | `command` | Wherever your tool runs | Any agent that accepts a prompt (`aider`, `opencode`, ...) | Non-Anthropic models |
 | `managed` | **Anthropic's sandbox**, off your runner | `patchbot managed init` once, three IDs as secrets | CI where the agent must not see repo secrets |
 
@@ -283,7 +285,7 @@ If you would rather not write Python, `[scanners.*] type = "command"` and `[feed
 
 **How do I suppress one advisory?** `[report] ignore = ["GHSA-..."]`.
 
-**Do I need Node in CI?** Only for `--agent claude` or `codex`. The `api` and `managed` backends need Python alone.
+**Do I need Node in CI?** Only for `--agent claude` or `codex`. The `api`, `openai` and `managed` backends need Python alone.
 
 **Which ecosystems include transitive dependencies?** npm, pnpm, and yarn, through their lockfiles. For Python, Go, and Rust, set `[inventory] sbom` to a CycloneDX file to scan the full resolved tree.
 
